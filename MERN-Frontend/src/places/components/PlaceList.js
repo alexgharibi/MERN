@@ -1,8 +1,21 @@
 import React from "react";
 import "./PlaceList.css";
 import Card from "../../shared/components/UIElements/Card";
-import { Link } from "react-router-dom";
 import PlaceItem from "./PlaceItem";
+import Button from "../../shared/components/FormsElements/Button";
+setFormData(
+  {
+    title: {
+      value: identifiedPlace.title,
+      isValid: true,
+    },
+    description: {
+      value: identifiedPlace.description,
+      isValid: false,
+    },
+  },
+  true
+);
 
 const PlaceList = ({ items }) => {
   if (items.length === 0) {
@@ -10,7 +23,7 @@ const PlaceList = ({ items }) => {
       <div className="place-list center">
         <Card>
           <h2>No places found</h2>
-          <button>Share Place</button>
+          <Button to="/places/new">Share Place</Button>
         </Card>
       </div>
     );
