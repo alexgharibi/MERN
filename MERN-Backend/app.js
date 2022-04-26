@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");
 const HttpError = require("./models/http-error");
@@ -24,4 +25,13 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || "Something went wrong" });
 });
 
-app.listen(3000);
+mongoose
+  .connect(
+    "mongodb+srv://Ali:Ottawa123@cluster0.nrsa1.mongodb.net/places?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    app.listen(3000);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
