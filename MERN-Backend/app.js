@@ -26,9 +26,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(
-    "mongodb+srv://Ali:Ottawa123@cluster0.nrsa1.mongodb.net/places?retryWrites=true&w=majority"
-  )
+  .connect("somefakeurl")
   .then(() => {
     app.listen(3000);
   })
