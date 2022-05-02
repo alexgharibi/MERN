@@ -1,5 +1,6 @@
 const { v4 } = require("uuid");
 const HttpError = require("../models/http-error");
+const User = require("../models/user");
 
 const { validationResult } = require("express-validator");
 
@@ -11,37 +12,59 @@ const getUsers = (req, res, next) => {
   res.json({ users: DUMMY_USERS });
 };
 
-const signUp = (req, res, next) => {
+const signUp = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    throw new HttpError("invalid inputs", 422);
+    const error = new HttpError("invalid inputs", 422);
+    return next(error);
   }
   const { name, email, password } = req.body;
 
-  const hasUser = DUMMY_USERS.find((u) => u.email === email);
-
-  if (hasUser) {
-    throw new HttpError("couldn't create user", 401);
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError("oooooi", 500);
+    return next(error);
   }
 
-  const createUser = {
-    id: v4(),
-    name,
+  if (existingUser) {
+    const error = new HttpError("oooooi", 422);
+    return next(error);
+  }
+
+  const createdUser = new User({
     email,
+    name,
+    image: "http://dfdfddfdfdf.com",
+    places,
     password,
-  };
+  });
 
-  DUMMY_USERS.push(createUser);
+  try {
+    await createdUser.save();
+  } catch (err) {
+    const error = new HttpError("Created failed", 500);
+    return next(error);
+  }
 
-  res.status(201).json({ user: createUser });
+  res.status(201).json({ user: createdUser.toObject({ getters: true }) });
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const identifiedUser = DUMMY_USERS.find((u) => u.email === email);
-  if (!identifiedUser || identifiedUser.password === password) {
-    throw new HttpError("couldn't find user", 401);
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email: email });
+  } catch (err) {
+    const error = new HttpError("oooooi", 500);
+    return next(error);
+  }
+
+  if (!existingUser || existingUser.password !== password) {
+    const error = new HttpError("invalid", 401);
+    return next(error);
   }
 
   res.json({ message: "logged in" });
