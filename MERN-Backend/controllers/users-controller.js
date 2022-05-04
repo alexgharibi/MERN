@@ -8,8 +8,10 @@ const DUMMY_USERS = [
   { id: "u1", name: "alex", email: "test4@test.com", password: "test4" },
 ];
 
-const getUsers = (req, res, next) => {
-  res.json({ users: DUMMY_USERS });
+const getUsers = async (req, res, next) => {
+  //You can add try and catch block
+  const users = await User.find({}, "email name");
+  res.json({ users: users.map((user) => user.toObject({ getters: true })) });
 };
 
 const signUp = async (req, res, next) => {
@@ -37,7 +39,7 @@ const signUp = async (req, res, next) => {
     email,
     name,
     image: "http://dfdfddfdfdf.com",
-    places,
+    places: [],
     password,
   });
 
