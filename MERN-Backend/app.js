@@ -9,6 +9,16 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Header",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Mwthods", "GET, POST, PATCH, DELETE");
+  next();
+});
+
 app.use("/api/places", placesRoutes);
 app.use("/api/users", usersRoutes);
 
